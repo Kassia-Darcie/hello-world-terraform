@@ -1,15 +1,8 @@
-variable "region" {
-  default = "us-east-1"
-}
-
-variable "lambda_runtime" {
-  default = "java21"
-}
-
-variable "lambda_filename" {
-  default = "../lambda/hello-world/target/hello-world-1.0-SNAPSHOT.jar"
-}
-
-variable "lambda_handler" {
-  default = "com.estudo.HelloWorldHandler"
+variable "iam_role_name" {}
+variable "function_name" {}
+variable "lambda_runtime" {}
+variable "lambda_filename" {}
+variable "lambda_handler" {}
+variable "dynamodb_arn" {
+  type = string
 }
