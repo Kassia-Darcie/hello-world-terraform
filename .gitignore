@@ -40,3 +40,7 @@ build/
 
 !**/.terraform
 .terraform
+
+.venv/
+**/.venv/
+zip/

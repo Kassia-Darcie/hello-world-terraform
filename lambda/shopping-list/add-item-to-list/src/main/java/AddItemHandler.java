@@ -33,7 +33,7 @@ public class AddItemHandler implements RequestHandler<Map<String, Object>, Map<S
             item.put("SK", AttributeValue.builder().s(sk).build());
             item.put("nome", AttributeValue.builder().s(nome).build());
             item.put("data", AttributeValue.builder().s(data).build());
-            item.put("status", AttributeValue.builder().s("todo").build());
+            item.put("status", AttributeValue.builder().s("TODO").build());
 
             PutItemRequest putItemRequest = PutItemRequest.builder()
                     .tableName(TABLE_NAME)
