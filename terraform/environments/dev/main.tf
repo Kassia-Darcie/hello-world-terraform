@@ -38,3 +38,13 @@ module "update-item" {
   dynamodb_arn   = module.dynamodb-shopping-list.dynamodb_table_arn
   source_dir     = "../../../lambda/shopping-list/update-item"
 }
+
+module "remove-item" {
+  source         = "../../modules/lambda_python"
+  function_name  = "remove_item"
+  lambda_runtime = "python3.13"
+  lambda_handler = "removeItem.lambda_handler"
+  iam_role_name  = "remove_item_role"
+  dynamodb_arn   = module.dynamodb-shopping-list.dynamodb_table_arn
+  source_dir     = "../../../lambda/shopping-list/remove-item"
+}
