@@ -33,7 +33,7 @@ public class AddItemHandler implements RequestHandler<Map<String, Object>, Map<S
             item.put("SK", AttributeValue.builder().s(sk).build());
             item.put("nome", AttributeValue.builder().s(nome).build());
             item.put("data", AttributeValue.builder().s(data).build());
-            item.put("status", AttributeValue.builder().s("TODO").build());
+            item.put("status", AttributeValue.builder().s(status).build());
 
             PutItemRequest putItemRequest = PutItemRequest.builder()
                     .tableName(TABLE_NAME)
@@ -48,7 +48,7 @@ public class AddItemHandler implements RequestHandler<Map<String, Object>, Map<S
             responseData.put("SK", sk);
             responseData.put("nome", nome);
             responseData.put("data", data);
-            responseData.put("status", "todo");
+            responseData.put("status", "TODO");
 
             Map<String, Object> response = new HashMap<>();
             response.put("statusCode", 201);
