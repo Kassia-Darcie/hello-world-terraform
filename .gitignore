@@ -38,9 +38,17 @@ build/
 ### Mac OS ###
 .DS_Store
 
-!**/.terraform
+### Terraform ###
+**/.terraform/*
 .terraform
+crash.log
+crash.*.log
+**/*.tfvars
+*.tfvars.json
+**/*.tfstate
+**/*.tfstate.*
 
 .venv/
 **/.venv/
 zip/
+
