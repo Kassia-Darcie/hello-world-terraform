@@ -3,11 +3,12 @@ import json
 import boto3
 from botocore.exceptions import ClientError
 
-dynamodb = boto3.resource("dynamodb")
 
+dynamodb = boto3.resource("dynamodb")
+TABLE_NAME = "shopping-list"
 
 def lambda_handler(event, context):
-    TABLE_NAME = "shopping-list"
+
     table = dynamodb.Table(TABLE_NAME)
 
     try:
