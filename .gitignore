@@ -52,3 +52,5 @@ crash.*.log
 **/.venv/
 zip/
 
+response.json
+
