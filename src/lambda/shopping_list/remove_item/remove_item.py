@@ -1,24 +1,22 @@
 import json
+import os
 
 import boto3
 from botocore.exceptions import ClientError
 
 dynamodb = boto3.resource("dynamodb")
-TABLE_NAME = "shopping-list"
+TABLE_NAME = os.environ.get("DYNAMODB_TABLE_NAME")
+table = dynamodb.Table(TABLE_NAME)
 
 
 def lambda_handler(event, context):
-
-    table = dynamodb.Table(TABLE_NAME)
 
     try:
         item_id = event.get("item_id")
         list_id = event.get("list_id")
 
         if not item_id or not list_id:
-            return response(
-                400, {"message": "item_id e list_id são obrigatórios."}
-            )
+            return response(400, {"message": "item_id e list_id são obrigatórios."})
 
         delete_response = table.delete_item(
             Key={"PK": f"LIST#{list_id}", "SK": f"ITEM#{item_id}"},

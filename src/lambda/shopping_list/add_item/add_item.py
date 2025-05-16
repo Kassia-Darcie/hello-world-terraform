@@ -9,12 +9,11 @@ from botocore.exceptions import ClientError
 
 dynamodb = boto3.resource("dynamodb")
 TABLE_NAME = os.environ.get("DYNAMODB_TABLE_NAME")
+table = dynamodb.Table(TABLE_NAME)
 
 
 def lambda_handler(event, context):
     try:
-        table = dynamodb.Table(TABLE_NAME)
-
         nome = event.get("nome")
         data = event.get("data")
 
