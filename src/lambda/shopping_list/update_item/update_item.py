@@ -15,11 +15,10 @@ def lambda_handler(event, context):
         list_id = event.get("list_id")
 
         if not item_id or not list_id:
-            return {
-                "statusCode": 400,
-                "body": json.dumps({"error": "item_id and list_id são obrigatórios"}),
-            }
-
+            return response(
+                400, {"message": "item_id e list_id são obrigatórios."}
+            )
+        
         nome = event.get("nome")
         data = event.get("data")
         status = event.get("status")

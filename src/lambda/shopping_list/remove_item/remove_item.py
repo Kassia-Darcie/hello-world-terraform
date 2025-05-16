@@ -3,9 +3,9 @@ import json
 import boto3
 from botocore.exceptions import ClientError
 
-
 dynamodb = boto3.resource("dynamodb")
 TABLE_NAME = "shopping-list"
+
 
 def lambda_handler(event, context):
 
@@ -16,23 +16,21 @@ def lambda_handler(event, context):
         list_id = event.get("list_id")
 
         if not item_id or not list_id:
-            return {
-                "statusCode": 400,
-                "body": json.dumps({"error": "item_id and list_id são obrigatórios"}),
-            }
+            return response(
+                400, {"message": "item_id e list_id são obrigatórios."}
+            )
 
         delete_response = table.delete_item(
-            Key={
-                "PK": f"LIST#{list_id}",
-                "SK": f"ITEM#{item_id}"
-            },
-            ReturnValues="ALL_OLD"
+            Key={"PK": f"LIST#{list_id}", "SK": f"ITEM#{item_id}"},
+            ReturnValues="ALL_OLD",
         )
 
         deleted_item = delete_response.get("Attributes")
 
         if deleted_item is not None:
-            return response(200, {"message":"Item deletado com sucesso", "item": deleted_item})
+            return response(
+                200, {"message": "Item deletado com sucesso", "item": deleted_item}
+            )
         else:
             return response(404, {"message": "Item não encontrado."})
 
