@@ -8,3 +8,7 @@ variable "dynamodb_arn" {
 variable "source_dir" {
   type = string
 }
+
+variable "environment_variables" {
+    type = map(string)
+}
