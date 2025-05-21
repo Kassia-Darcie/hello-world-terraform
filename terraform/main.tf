@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 module "cognito" {
-  source            = "./modules/cognito"
+  source = "./modules/cognito"
 }
 
 module "hello-terraform" {
@@ -12,7 +12,7 @@ module "hello-terraform" {
   lambda_runtime = "python3.13"
   lambda_handler = "hello_terraform.lambda_handler"
   iam_role_name  = "hello_role"
-  source_dir     = "/../src/lambda/hello_world"
+  source_dir     = "../src/lambda/hello_world"
 }
 
 module "dynamodb-shopping-list" {
@@ -59,4 +59,12 @@ module "remove-item" {
   environment_variables = {
     DYNAMODB_TABLE_NAME = "shopping-list"
   }
+}
+
+module "api_gateway" {
+  source              = "./modules/apigateway"
+  lambda_function_arn = module.hello-terraform.lambda_function_arn
+  user_pool_id        = module.cognito.cognito_user_pool
+  user_pool_client_id = module.cognito.cognito_user_pool_client
+  region              = var.region
 }
