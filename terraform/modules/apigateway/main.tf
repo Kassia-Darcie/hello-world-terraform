@@ -4,10 +4,10 @@ resource "aws_apigatewayv2_api" "api" {
 }
 
 resource "aws_apigatewayv2_authorizer" "cognito_authorizer" {
-  api_id             = aws_apigatewayv2_api.api.id
-  authorizer_type    = "JWT"
-  identity_sources   = ["$request.header.Authorization"]
-  name               = "cognito-authorizer"
+  api_id           = aws_apigatewayv2_api.api.id
+  authorizer_type  = "JWT"
+  identity_sources = ["$request.header.Authorization"]
+  name             = "cognito-authorizer"
   jwt_configuration {
     audience = [var.user_pool_client_id]
     issuer   = "https://cognito-idp.${var.region}.amazonaws.com/${var.user_pool_id}"
@@ -39,16 +39,16 @@ resource "aws_apigatewayv2_stage" "stage" {
 
   access_log_settings {
     destination_arn = aws_cloudwatch_log_group.api_gw_logs.arn
-    format          = jsonencode({
-      requestId = "$context.requestId"
-      ip        = "$context.identity.sourceIp"
-      caller    = "$context.identity.caller"
-      user      = "$context.identity.user"
-      requestTime = "$context.requestTime"
-      httpMethod = "$context.httpMethod"
-      resourcePath = "$context.resourcePath"
-      status = "$context.status"
-      protocol = "$context.protocol"
+    format = jsonencode({
+      requestId      = "$context.requestId"
+      ip             = "$context.identity.sourceIp"
+      caller         = "$context.identity.caller"
+      user           = "$context.identity.user"
+      requestTime    = "$context.requestTime"
+      httpMethod     = "$context.httpMethod"
+      resourcePath   = "$context.resourcePath"
+      status         = "$context.status"
+      protocol       = "$context.protocol"
       responseLength = "$context.responseLength"
     })
   }
@@ -62,7 +62,7 @@ resource "aws_cloudwatch_log_group" "api_gw_logs" {
 resource "aws_lambda_permission" "api_gw_lambda_permission" {
   statement_id  = "AllowAPIGatewayInvoke"
   action        = "lambda:InvokeFunction"
-  function_name = var.lambda_function_arn 
+  function_name = var.lambda_function_arn
   principal     = "apigateway.amazonaws.com"
 
   source_arn = "${aws_apigatewayv2_api.api.execution_arn}/*/*/hello"
