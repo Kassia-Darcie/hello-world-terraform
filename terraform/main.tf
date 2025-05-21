@@ -2,6 +2,10 @@ provider "aws" {
   region = var.region
 }
 
+module "cognito" {
+  source            = "./modules/cognito"
+}
+
 module "hello-terraform" {
   source         = "./modules/lambda"
   function_name  = "hello_terraform"
