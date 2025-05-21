@@ -55,3 +55,5 @@ zip/
 response.json
 comandos_cli.txt
 
+.terraform.lock.hcl
+
