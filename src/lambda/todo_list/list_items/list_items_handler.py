@@ -3,11 +3,13 @@ import json
 import boto3
 from boto3.dynamodb.conditions import Key
 
+dynamodb = boto3.resource("dynamodb")
+table = dynamodb.Table(os.environ["DYNAMODB_TABLE_NAME"])
+
 
 def lambda_handler(event, context):
     try:
-        dynamodb = boto3.resource("dynamodb")
-        table = dynamodb.Table(os.environ["DYNAMODB_TABLE_NAME"])
+
         user_id = event["requestContext"]["authorizer"]["jwt"]["claims"]["sub"]
         response = table.query(
             KeyConditionExpression=Key("PK").eq(f"USER#{user_id}")
