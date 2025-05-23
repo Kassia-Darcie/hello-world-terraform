@@ -9,7 +9,6 @@ table = dynamodb.Table(os.environ["DYNAMODB_TABLE_NAME"])
 
 def lambda_handler(event, context):
     try:
-
         user_id = event["requestContext"]["authorizer"]["jwt"]["claims"]["sub"]
         response = table.query(
             KeyConditionExpression=Key("PK").eq(f"USER#{user_id}")
