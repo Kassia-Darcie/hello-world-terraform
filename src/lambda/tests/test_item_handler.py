@@ -1,25 +1,5 @@
 import json
-import pytest
 from todo_list.list_items.list_items_handler import lambda_handler
-
-
-@pytest.fixture
-def mock_event():
-    return {
-        "requestContext": {"authorizer": {"jwt": {"claims": {"sub": "test_user_id"}}}}
-    }
-
-
-@pytest.fixture
-def mock_dynamodb_response(monkeypatch):
-    def mock_query(*args, **kwargs):
-        return {
-            "Items": [{"PK": "USER#test_user_id", "SK": "ITEM#123", "data": "sample"}]
-        }
-
-    monkeypatch.setattr(
-        "todo_list.list_items.list_items_handler.table.query", mock_query
-    )
 
 
 def test_lambda_handler_success(mock_event, mock_dynamodb_response):
