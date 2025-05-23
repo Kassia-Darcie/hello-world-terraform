@@ -1,0 +1,24 @@
+name: 'Terraform fmt check'
+
+on: 
+  pull_request:
+    types: [opened]
+
+jobs:
+  terraform_fmt:
+    name: 'Terraform fmt check'
+    runs-on: ubuntu-latest 
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.8.0
+
+      - name: Terraform Fmt Check
+        id: fmt
+        run: terraform fmt -check -no-color
+        working-directory: ./terraform
