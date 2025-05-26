@@ -15,9 +15,11 @@ resource "aws_lambda_function" "lambda_py" {
 
 data "archive_file" "lambda_zip" {
   type        = "zip"
-  source_dir  = "${path.root}/../src/lambda/shopping_list/${var.source_dir}"
+  source_dir  = var.source_dir
   output_path = "${path.module}/zip/${var.function_name}.zip"
 
 }
+
+
 
 

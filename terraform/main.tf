@@ -29,11 +29,12 @@ module "add-item" {
   lambda_handler = "add_item.lambda_handler"
   iam_role_name  = "add_item_role"
   dynamodb_arn   = module.dynamodb-shopping-list.dynamodb_table_arn
-  source_dir     = "add_item"
+  source_dir     = "${path.root}/../src/lambda/shopping_list/add_item"
   environment_variables = {
     DYNAMODB_TABLE_NAME = "shopping-list"
   }
 }
+
 
 module "update-item" {
   source         = "./modules/lambda_python"
@@ -42,11 +43,12 @@ module "update-item" {
   lambda_handler = "update_item.lambda_handler"
   iam_role_name  = "update_item_role"
   dynamodb_arn   = module.dynamodb-shopping-list.dynamodb_table_arn
-  source_dir     = "update_item"
+  source_dir     = "${path.root}/../src/lambda/shopping_list/update_item"
   environment_variables = {
     DYNAMODB_TABLE_NAME = "shopping-list"
   }
 }
+
 
 module "remove-item" {
   source         = "./modules/lambda_python"
@@ -55,16 +57,53 @@ module "remove-item" {
   lambda_handler = "remove_item.lambda_handler"
   iam_role_name  = "remove_item_role"
   dynamodb_arn   = module.dynamodb-shopping-list.dynamodb_table_arn
-  source_dir     = "remove_item"
+  source_dir     = "${path.root}/../src/lambda/shopping_list/remove_item"
   environment_variables = {
     DYNAMODB_TABLE_NAME = "shopping-list"
   }
 }
 
+
 module "api_gateway" {
-  source              = "./modules/apigateway"
-  lambda_function_arn = module.hello-terraform.lambda_function_arn
-  user_pool_id        = module.cognito.cognito_user_pool
-  user_pool_client_id = module.cognito.cognito_user_pool_client
-  region              = var.region
+  source                   = "./modules/apigateway"
+  lambda_function_arn      = module.hello-terraform.lambda_function_arn
+  lambda_function_name     = module.hello-terraform.lambda_function_name
+  list_items_function_arn  = module.list-items.lambda_function_arn
+  list_items_function_name = module.list-items.lambda_function_name
+  user_pool_id             = module.cognito.cognito_user_pool
+  user_pool_client_id      = module.cognito.cognito_user_pool_client
+  region                   = var.region
+}
+
+module "list-items" {
+  source         = "./modules/lambda_python"
+  function_name  = "list_items"
+  lambda_runtime = "python3.13"
+  lambda_handler = "list_items_handler.lambda_handler"
+  iam_role_name  = "list_items_role"
+  dynamodb_arn   = module.dynamodb-todo-list.dynamodb_table_arn
+  source_dir     = "${path.root}/../src/lambda/todo-list/list_items"
+  environment_variables = {
+    DYNAMODB_TABLE_NAME = "todo-list"
+  }
+}
+
+
+module "dynamodb-todo-list" {
+  source            = "./modules/dynamodb"
+  dynamo_table_name = "todo-list"
+  hash_key_name     = "PK"
+  range_key_name    = "SK"
+}
+
+output "cognito_user_pool_id" {
+  value = module.cognito.cognito_user_pool
+}
+
+output "cognito_user_pool_client_id" {
+  value = module.cognito.cognito_user_pool_client
+}
+
+output "api_gateway_url" {
+  value = module.api_gateway.api_url
 }
