@@ -82,7 +82,7 @@ module "list-items" {
   lambda_handler = "list_items_handler.lambda_handler"
   iam_role_name  = "list_items_role"
   dynamodb_arn   = module.dynamodb-todo-list.dynamodb_table_arn
-  source_dir     = "${path.root}/../src/lambda/todo-list/list_items"
+  source_dir     = "${path.root}/../src/lambda/todo_list/list_items"
   environment_variables = {
     DYNAMODB_TABLE_NAME = "todo-list"
   }
