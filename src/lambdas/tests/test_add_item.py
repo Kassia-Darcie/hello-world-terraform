@@ -10,29 +10,13 @@ import lambdas.shopping_list.add_item.add_item as add_item_module
 
 @pytest.fixture(scope="function")
 def mocked_add_item_table(aws_credentials, dynamodb_resource_and_name): 
-    """
-    Esta fixture ativa o moto, cria a tabela e mocka a variável global 'table'
-    no módulo add_item.py para apontar para a tabela mockada.
-    """
+   
     dynamodb_resource, table_name = dynamodb_resource_and_name 
-    
-    with mock_aws(): 
-        table_mock = dynamodb_resource.create_table(
-            TableName=table_name,
-            KeySchema=[
-                {"AttributeName": "PK", "KeyType": "HASH"},
-                {"AttributeName": "SK", "KeyType": "RANGE"},
-            ],
-            AttributeDefinitions=[
-                {"AttributeName": "PK", "AttributeType": "S"},
-                {"AttributeName": "SK", "AttributeType": "S"},
-            ],
-            BillingMode="PAY_PER_REQUEST",
-        )
-        table_mock.wait_until_exists()
 
-        with patch.object(add_item_module, 'table', new=table_mock):
-            yield table_mock 
+    table_mock = dynamodb_resource.Table(table_name)
+
+    with patch.object(add_item_module, 'table', new=table_mock):
+        yield table_mock 
 
 
 def test_lambda_handler_success(mocked_add_item_table):

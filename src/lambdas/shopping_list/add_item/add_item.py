@@ -8,13 +8,8 @@ from boto3.dynamodb.conditions import Attr
 from botocore.exceptions import ClientError
 
 dynamodb = boto3.resource("dynamodb")
-TABLE_NAME = os.environ.get("DYNAMODB_TABLE_NAME")
-
-if TABLE_NAME:
-    table = dynamodb.Table(TABLE_NAME)
-else:
-    table = None 
-
+table = dynamodb.Table(os.environ["DYNAMODB_TABLE_NAME"])
+ 
 def lambda_handler(event, context):
     try:
         nome = event.get("nome")
@@ -22,10 +17,6 @@ def lambda_handler(event, context):
 
         if not nome or not data:
             return response(400, {"message": "nome e data são obrigatórios"})
-
-        # Garante que a tabela está pronta (será a mockada pelo moto)
-        if table is None:
-             return response(500, {"message": "Erro de configuração: Tabela DynamoDB não inicializada."})
 
         new_item = {
             "PK": f"LIST#{generate_list_id()}",
