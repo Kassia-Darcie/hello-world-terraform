@@ -23,3 +23,12 @@ variable "add_item_function_name" {
   type        = string
 }
 
+variable "update_item_function_arn" {
+  description = "ARN da função Lambda que atualiza um item (update_item.py)"
+  type        = string
+}
+
+variable "update_item_function_name" {
+  description = "Nome da função Lambda que atualiza um item (update_item.py)"
+  type        = string
+}
