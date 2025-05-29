@@ -12,7 +12,7 @@ module "hello-terraform" {
   lambda_runtime = "python3.13"
   lambda_handler = "hello_terraform.lambda_handler"
   iam_role_name  = "hello_role"
-  source_dir     = "../src/lambda/hello_world"
+  source_dir     = "../src/lambdas/hello_world"
 }
 
 module "dynamodb-shopping-list" {
@@ -29,7 +29,7 @@ module "add-item" {
   lambda_handler = "add_item.lambda_handler"
   iam_role_name  = "add_item_role"
   dynamodb_arn   = module.dynamodb-shopping-list.dynamodb_table_arn
-  source_dir     = "${path.root}/../src/lambda/shopping_list/add_item"
+  source_dir     = "${path.root}/../src/lambdas/shopping_list/add_item"
   environment_variables = {
     DYNAMODB_TABLE_NAME = "shopping-list"
   }
@@ -43,7 +43,7 @@ module "update-item" {
   lambda_handler = "update_item.lambda_handler"
   iam_role_name  = "update_item_role"
   dynamodb_arn   = module.dynamodb-shopping-list.dynamodb_table_arn
-  source_dir     = "${path.root}/../src/lambda/shopping_list/update_item"
+  source_dir     = "${path.root}/../src/lambdas/shopping_list/update_item"
   environment_variables = {
     DYNAMODB_TABLE_NAME = "shopping-list"
   }
@@ -57,7 +57,7 @@ module "remove-item" {
   lambda_handler = "remove_item.lambda_handler"
   iam_role_name  = "remove_item_role"
   dynamodb_arn   = module.dynamodb-shopping-list.dynamodb_table_arn
-  source_dir     = "${path.root}/../src/lambda/shopping_list/remove_item"
+  source_dir     = "${path.root}/../src/lambdas/shopping_list/remove_item"
   environment_variables = {
     DYNAMODB_TABLE_NAME = "shopping-list"
   }
@@ -73,6 +73,9 @@ module "api_gateway" {
   user_pool_id             = module.cognito.cognito_user_pool
   user_pool_client_id      = module.cognito.cognito_user_pool_client
   region                   = var.region
+
+  add_item_function_arn  = module.add-item.lambda_function_arn
+  add_item_function_name = module.add-item.lambda_function_name
 }
 
 module "list-items" {
@@ -82,7 +85,7 @@ module "list-items" {
   lambda_handler = "list_items_handler.lambda_handler"
   iam_role_name  = "list_items_role"
   dynamodb_arn   = module.dynamodb-todo-list.dynamodb_table_arn
-  source_dir     = "${path.root}/../src/lambda/todo_list/list_items"
+  source_dir     = "${path.root}/../src/lambdas/todo_list/list_items"
   environment_variables = {
     DYNAMODB_TABLE_NAME = "todo-list"
   }

@@ -8,10 +8,8 @@ from boto3.dynamodb.conditions import Attr
 from botocore.exceptions import ClientError
 
 dynamodb = boto3.resource("dynamodb")
-TABLE_NAME = os.environ.get("DYNAMODB_TABLE_NAME")
-table = dynamodb.Table(TABLE_NAME)
-
-
+table = dynamodb.Table(os.environ["DYNAMODB_TABLE_NAME"])
+ 
 def lambda_handler(event, context):
     try:
         nome = event.get("nome")

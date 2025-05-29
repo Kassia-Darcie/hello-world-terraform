@@ -6,7 +6,6 @@ from boto3.dynamodb.conditions import Key
 dynamodb = boto3.resource("dynamodb")
 table = dynamodb.Table(os.environ["DYNAMODB_TABLE_NAME"])
 
-
 def lambda_handler(event, context):
     try:
         user_id = event["requestContext"]["authorizer"]["jwt"]["claims"]["sub"]
