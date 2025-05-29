@@ -17,7 +17,6 @@ data "archive_file" "lambda_zip" {
   type        = "zip"
   source_dir  = var.source_dir
   output_path = "${path.module}/zip/${var.function_name}.zip"
-
 }
 
 

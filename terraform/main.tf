@@ -70,12 +70,11 @@ module "api_gateway" {
   lambda_function_name     = module.hello-terraform.lambda_function_name
   list_items_function_arn  = module.list-items.lambda_function_arn
   list_items_function_name = module.list-items.lambda_function_name
+  add_item_function_arn    = module.add-item.lambda_function_arn
+  add_item_function_name   = module.add-item.lambda_function_name
   user_pool_id             = module.cognito.cognito_user_pool
   user_pool_client_id      = module.cognito.cognito_user_pool_client
   region                   = var.region
-
-  add_item_function_arn  = module.add-item.lambda_function_arn
-  add_item_function_name = module.add-item.lambda_function_name
 }
 
 module "list-items" {
@@ -84,20 +83,13 @@ module "list-items" {
   lambda_runtime = "python3.13"
   lambda_handler = "list_items_handler.lambda_handler"
   iam_role_name  = "list_items_role"
-  dynamodb_arn   = module.dynamodb-todo-list.dynamodb_table_arn
-  source_dir     = "${path.root}/../src/lambdas/todo_list/list_items"
+  dynamodb_arn   = module.dynamodb-shopping-list.dynamodb_table_arn
+  source_dir     = "${path.root}/../src/lambdas/shopping_list/list_items"
   environment_variables = {
-    DYNAMODB_TABLE_NAME = "todo-list"
+    DYNAMODB_TABLE_NAME = "shopping-list"
   }
 }
 
-
-module "dynamodb-todo-list" {
-  source            = "./modules/dynamodb"
-  dynamo_table_name = "todo-list"
-  hash_key_name     = "PK"
-  range_key_name    = "SK"
-}
 
 output "cognito_user_pool_id" {
   value = module.cognito.cognito_user_pool
