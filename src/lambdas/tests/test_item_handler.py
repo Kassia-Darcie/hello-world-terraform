@@ -1,6 +1,6 @@
 import json
 
-from lambdas.todo_list.list_items.list_items_handler import lambda_handler
+from lambdas.shopping_list.list_items.list_items_handler import lambda_handler
 
 def test_lambda_handler_success(mock_event, mocked_list_items_table):
     

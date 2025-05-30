@@ -64,19 +64,6 @@ module "remove-item" {
 }
 
 
-module "api_gateway" {
-  source                   = "./modules/apigateway"
-  lambda_function_arn      = module.hello-terraform.lambda_function_arn
-  lambda_function_name     = module.hello-terraform.lambda_function_name
-  list_items_function_arn  = module.list-items.lambda_function_arn
-  list_items_function_name = module.list-items.lambda_function_name
-  add_item_function_arn    = module.add-item.lambda_function_arn
-  add_item_function_name   = module.add-item.lambda_function_name
-  user_pool_id             = module.cognito.cognito_user_pool
-  user_pool_client_id      = module.cognito.cognito_user_pool_client
-  region                   = var.region
-}
-
 module "list-items" {
   source         = "./modules/lambda_python"
   function_name  = "list_items"
@@ -90,6 +77,20 @@ module "list-items" {
   }
 }
 
+module "api_gateway" {
+  source                    = "./modules/apigateway"
+  lambda_function_arn       = module.hello-terraform.lambda_function_arn
+  lambda_function_name      = module.hello-terraform.lambda_function_name
+  list_items_function_arn   = module.list-items.lambda_function_arn
+  list_items_function_name  = module.list-items.lambda_function_name
+  add_item_function_arn     = module.add-item.lambda_function_arn
+  add_item_function_name    = module.add-item.lambda_function_name
+  update_item_function_arn  = module.update-item.lambda_function_arn
+  update_item_function_name = module.update-item.lambda_function_name
+  user_pool_id              = module.cognito.cognito_user_pool
+  user_pool_client_id       = module.cognito.cognito_user_pool_client
+  region                    = var.region
+}
 
 output "cognito_user_pool_id" {
   value = module.cognito.cognito_user_pool

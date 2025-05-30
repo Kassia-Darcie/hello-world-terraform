@@ -17,6 +17,7 @@ resource "aws_iam_role" "iam_role_for_lambda" {
 EOF
 }
 
+
 resource "aws_iam_policy" "lambda_dynamodb_access_policy" {
   name        = "${var.function_name}-dynamodb-policy"
   description = "Permite que a Lambda acesse a tabela DynamoDB específica"
