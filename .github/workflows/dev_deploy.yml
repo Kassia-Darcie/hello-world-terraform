@@ -11,9 +11,45 @@ permissions:
 
 jobs:
   terraform:
-    uses: ./.github/workflows/terraform_workflow.yml
-    with:
-      environment: dev
-      aws-region: "sa-east-1"
-      aws-statefile-s3-bucket: "kassiadarcie-sa-east-1-terraform-statefile"
-      aws-lock-dynamodb-table: "kassiadarcie-sa-east-1-terraform-lock"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./terraform
+        shell: bash
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.11.4 
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Terraform Init
+        run: |
+          terraform init \
+            -backend-config="bucket=kassiadarcie-sa-east-1-terraform-statefile" \
+            -backend-config="key=${{ github.event.repository.name }}" \
+            -backend-config="region=sa-east-1" \
+            -backend-config="dynamodb_table=kassiadarcie-sa-east-1-terraform-lock"
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        id: terraform-plan
+        run: terraform workspace select dev || terraform workspace new dev &&
+          terraform plan -var-file="./envs/dev/terraform.tfvars" -out="dev.plan"
+
+      - name: Terraform Apply
+        id: terraform-apply
+        run: terraform workspace select dev || terraform workspace new dev &&
+          terraform apply "dev.plan"
