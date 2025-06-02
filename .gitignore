@@ -47,6 +47,7 @@ crash.*.log
 *.tfvars.json
 **/*.tfstate
 **/*.tfstate.*
+!**/envs/dev/terraform.tfvars
 
 .venv/
 **/.venv/

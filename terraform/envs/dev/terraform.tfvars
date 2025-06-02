@@ -1,0 +1,1 @@
+bucket_name="dev-hello-terraform-pipeline"
