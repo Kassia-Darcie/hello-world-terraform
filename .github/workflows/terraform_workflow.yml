@@ -24,6 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
+        working-directory: ./terraform
         shell: bash
 
     steps:
@@ -44,7 +45,7 @@ jobs:
 
       - name: Terraform Init
         run: |
-          cd terraform && terraform init \
+          terraform init \
             -backend-config="bucket=${{ inputs.aws-statefile-s3-bucket }}" \
             -backend-config="key=${{ github.event.repository.name }}" \
             -backend-config="region=${{ inputs.aws-region }}" \
@@ -55,6 +56,5 @@ jobs:
 
       - name: Terraform Plan
         id: terraform-plan
-        run: cd terraform &&
-          terraform workspace select ${{ inputs.environment }} || terraform workspace new ${{ inputs.environment }} &&
+        run: terraform workspace select ${{ inputs.environment }} || terraform workspace new ${{ inputs.environment }} &&
           terraform plan -var-file="./envs/${{ inputs.environment }}/terraform.tfvars" -out="${{ inputs.environment }}.plan"
