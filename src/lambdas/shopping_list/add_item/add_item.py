@@ -25,8 +25,11 @@ def lambda_handler(event, context):
         nome = body.get("nome")
         data = body.get("data")
 
-        if not nome or not data:
-            return response(400, {"message": "nome e data são obrigatórios"})
+        if not nome:
+            return response(400, {"message": "nome é obrigatório"})
+        
+        if not data:
+            data = date.today().strftime('%Y%m%d')
 
         new_item = {
             "PK": f"LIST#{generate_list_id(data)}",
@@ -64,3 +67,5 @@ def response(status_code, body):
 
 def generate_list_id(date):
     return date.replace("-", "")
+
+print(date.today().strftime('%Y%m%d'))
