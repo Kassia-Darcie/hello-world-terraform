@@ -24,19 +24,23 @@ def lambda_handler(event, context):
 
         nome = body.get("nome")
         data = body.get("data")
+        tipo_tarefa = body.get("tipo_tarefa") or 'Tarefa a Ser Feita'
 
         if not nome:
             return response(400, {"message": "nome é obrigatório"})
         
         if not data:
-            data = date.today().strftime('%Y%m%d')
+            data = date.today()
+            
+        if not validate_tipo_tarefa(tipo_tarefa):
+            return response(400, {"message": "Formato de tipo_tarefa inválido"})
 
         new_item = {
             "PK": f"LIST#{generate_list_id(data)}",
             "SK": f"ITEM#{uuid.uuid4()}",
             "user_id": user_id,
             "nome": nome,
-            "data": data,
+            "data": data.strftime("%Y-%m-%d, %H:%M:%S"),
             "status": "TODO",
         }
 
@@ -65,7 +69,14 @@ def response(status_code, body):
     }
 
 
-def generate_list_id(date):
-    return date.replace("-", "")
+def generate_list_id(date: date):
+    return date.strftime('%Y%m%d')
+
+def validate_tipo_tarefa(tipo_tarefa):
+    tipos_validos = ('Tarefa a Ser Feita', 'Item de Compra')
+    if tipos_validos.count(tipo_tarefa) == 1:
+        return True
+    else:
+        return False
 
 print(date.today().strftime('%Y%m%d'))
