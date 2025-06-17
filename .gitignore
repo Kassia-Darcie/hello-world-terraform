@@ -47,6 +47,7 @@ crash.*.log
 *.tfvars.json
 **/*.tfstate
 **/*.tfstate.*
+!**/envs/dev/terraform.tfvars
 
 .venv/
 **/.venv/
@@ -55,3 +56,15 @@ zip/
 response.json
 comandos_cli.txt
 
+.terraform.lock.hcl
+
+### PYTHON ###
+.pytest_cache/
+__pycache__/
+
+### Virtual environments ###
+venv/
+ENV/
+env/
+.env/
+.venv/

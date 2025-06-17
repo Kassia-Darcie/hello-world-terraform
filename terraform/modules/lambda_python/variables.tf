@@ -10,5 +10,5 @@ variable "source_dir" {
 }
 
 variable "environment_variables" {
-    type = map(string)
+  type = map(string)
 }

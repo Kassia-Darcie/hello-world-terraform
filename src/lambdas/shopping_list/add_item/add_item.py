@@ -8,20 +8,22 @@ from boto3.dynamodb.conditions import Attr
 from botocore.exceptions import ClientError
 
 dynamodb = boto3.resource("dynamodb")
-TABLE_NAME = os.environ.get("DYNAMODB_TABLE_NAME")
-table = dynamodb.Table(TABLE_NAME)
-
+table = dynamodb.Table(os.environ["DYNAMODB_TABLE_NAME"])
 
 def lambda_handler(event, context):
     try:
-        nome = event.get("nome")
-        data = event.get("data")
+        body = json.loads(event.get("body", "{}"))
+        if not body:
+            return response(400, {"message": "Corpo da requisição não pode estar vazio."})
+        
+        nome = body.get("nome")
+        data = body.get("data")
 
         if not nome or not data:
             return response(400, {"message": "nome e data são obrigatórios"})
 
         new_item = {
-            "PK": f"LIST#{generate_list_id()}",
+            "PK": f"LIST#{generate_list_id(data)}",
             "SK": f"ITEM#{uuid.uuid4()}",
             "nome": nome,
             "data": data,
@@ -53,6 +55,5 @@ def response(status_code, body):
     }
 
 
-def generate_list_id():
-    created_at = date.today()
-    return created_at.strftime("%Y%m%d")
+def generate_list_id(date):
+    return date.replace("-", "")
