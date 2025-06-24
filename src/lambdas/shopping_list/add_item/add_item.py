@@ -1,7 +1,7 @@
 import json
 import os
 import uuid
-from datetime import date
+from datetime import datetime
 
 
 
@@ -21,16 +21,25 @@ def lambda_handler(event, context):
             return response(400, {"message": "Corpo da requisição não pode estar vazio."})
         
         user_id = event.get("requestContext", {}).get("authorizer", {}).get("jwt", {}).get("claims", {}).get("sub")
+        
+        if not user_id:
+            return response(401, {"message": "Unauthorized"})
 
         nome = body.get("nome")
         data = body.get("data")
+        
         tipo_tarefa = body.get("tipo_tarefa") or 'Tarefa a Ser Feita'
 
         if not nome:
             return response(400, {"message": "nome é obrigatório"})
         
         if not data:
-            data = date.today()
+            data = datetime.today()
+        else:
+            try:
+                data = datetime.strptime(data, "%Y-%m-%d")
+            except ValueError:
+                return response(400, {"message": "Formato de data inválido. Use YYYY-MM-DD."})
             
         if not validate_tipo_tarefa(tipo_tarefa):
             return response(400, {"message": "Formato de tipo_tarefa inválido"})
@@ -42,6 +51,7 @@ def lambda_handler(event, context):
             "nome": nome,
             "data": data.strftime("%Y-%m-%d, %H:%M:%S"),
             "status": "TODO",
+            "tipo_tarefa": tipo_tarefa
         }
 
         table.put_item(
@@ -69,7 +79,7 @@ def response(status_code, body):
     }
 
 
-def generate_list_id(date: date):
+def generate_list_id(date: datetime):
     return date.strftime('%Y%m%d')
 
 def validate_tipo_tarefa(tipo_tarefa):
@@ -79,4 +89,3 @@ def validate_tipo_tarefa(tipo_tarefa):
     else:
         return False
 
-print(date.today().strftime('%Y%m%d'))
