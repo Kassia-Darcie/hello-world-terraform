@@ -1,6 +1,6 @@
 import unittest
 
-from hello_terraform import lambda_handler
+from lambdas.hello_world.hello_terraform import lambda_handler
 
 
 class TestLambdaFunction(unittest.TestCase):

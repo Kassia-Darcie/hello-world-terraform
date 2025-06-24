@@ -68,3 +68,7 @@ ENV/
 env/
 .env/
 .venv/
+
+.env
+
+events/*.json

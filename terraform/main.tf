@@ -1,7 +1,3 @@
-resource "aws_s3_bucket" "bucket" {
-  bucket = var.bucket_name
-}
-
 
 module "cognito" {
   source = "./modules/cognito"

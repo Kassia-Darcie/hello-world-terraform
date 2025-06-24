@@ -1,0 +1,26 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Template SAM para debug local do projeto hello-world-terraform
+
+Resources:
+  # --- Função para Adicionar Item ---
+  AddItemFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambdas/shopping_list/add_item/
+      Handler: add_item.lambda_handler
+      Runtime: python3.13
+      Architectures:
+        - x86_64
+      Environment:
+        Variables:
+          DYNAMODB_TABLE_NAME: "teste" # Tabela local para teste
+      Events:
+        AddItem:
+          Type: Api
+          Properties:
+            Path: /lista-tarefa
+            Method: post
+
+ 

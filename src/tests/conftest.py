@@ -1,3 +1,4 @@
+import json
 import os
 import sys
 import pytest
@@ -7,18 +8,31 @@ from unittest.mock import MagicMock
 
 # Adiciona o diretório 'src/' ao sys.path
 current_dir = os.path.dirname(os.path.abspath(__file__))
-src_path = os.path.abspath(os.path.join(current_dir, "..", "..", "src"))
+src_path = os.path.abspath(os.path.join(current_dir, ".."))
 if src_path not in sys.path:
     sys.path.insert(0, src_path)
 
 # Define variável de ambiente usada no código
-os.environ["DYNAMODB_TABLE_NAME"] = "test-mock-table"
+
+TABLE_NAME = os.environ.get("DYNAMODB_TABLE_NAME", "test-table")
 
 @pytest.fixture
 def mock_event():
-    return {
-        "requestContext": {"authorizer": {"jwt": {"claims": {"sub": "test_user_id"}}}}
-    }
+    def mock_event(body, user_id="user-123-abc"):
+        """Função auxiliar para criar um evento da API Gateway."""
+        return {
+            "body": json.dumps(body),
+            "requestContext": {
+                "authorizer": {
+                    "jwt": {
+                        "claims": {
+                            "sub": user_id
+                        }
+                    }
+                }
+            }
+        }
+    return mock_event
 
 @pytest.fixture
 def mocked_list_items_table(monkeypatch):
@@ -39,19 +53,17 @@ def aws_credentials():
     os.environ["AWS_SECURITY_TOKEN"] = "testing"
     os.environ["AWS_SESSION_TOKEN"] = "testing"
     os.environ["AWS_DEFAULT_REGION"] = "us-east-1"
+    os.environ["DYNAMODB_TABLE_NAME"] = TABLE_NAME
 
-@pytest.fixture(scope="function")
-def dynamodb_resource_and_name(aws_credentials):
-    original_table_name = os.environ.get("DYNAMODB_TABLE_NAME")
-    moto_table_name = "test-shopping-list-table"
-    os.environ["DYNAMODB_TABLE_NAME"] = moto_table_name
-
+@pytest.fixture(scope="session")
+def dynamodb_resource(aws_credentials):
+    
     with mock_aws():
         dynamodb = boto3.resource("dynamodb", region_name="us-east-1")
 
         try:
             table = dynamodb.create_table(
-                TableName=moto_table_name,
+                TableName=TABLE_NAME,
                 KeySchema=[
                     {"AttributeName": "PK", "KeyType": "HASH"},
                     {"AttributeName": "SK", "KeyType": "RANGE"},
@@ -59,19 +71,35 @@ def dynamodb_resource_and_name(aws_credentials):
                 AttributeDefinitions=[
                     {"AttributeName": "PK", "AttributeType": "S"},
                     {"AttributeName": "SK", "AttributeType": "S"},
+                    {"AttributeName": "user_id", "AttributeType": "S"},
+                ],
+                GlobalSecondaryIndexes=[
+                    {
+                        "IndexName": "user_id",
+                        "KeySchema": [
+                            {"AttributeName": "user_id", "KeyType": "HASH"},
+                            {"AttributeName": "PK", "KeyType": "RANGE"},
+                        ],
+                        "Projection": {"ProjectionType": "ALL"},
+                    }
                 ],
                 BillingMode="PAY_PER_REQUEST",
             )
+            
             table.wait_until_exists()
+            
+            
         except dynamodb.meta.client.exceptions.ResourceInUseException:
-            table = dynamodb.Table(moto_table_name)
+            table = dynamodb.Table(TABLE_NAME)
 
-        yield dynamodb, moto_table_name
+        yield dynamodb
 
-    if original_table_name is not None:
-        os.environ["DYNAMODB_TABLE_NAME"] = original_table_name
-    else:
-        os.environ.pop("DYNAMODB_TABLE_NAME", None)
+   
+        
+@pytest.fixture(scope="function")
+def mocked_dynamodb_table(dynamodb_resource):
+    table = dynamodb_resource.Table(TABLE_NAME)
+    yield table
 
 @pytest.fixture
 def mock_dynamodb(monkeypatch):
@@ -130,3 +158,4 @@ def mock_dynamodb(monkeypatch):
         "table": mock_table,
         "get_item_not_found": mock_get_item_not_found
     }
+ 
