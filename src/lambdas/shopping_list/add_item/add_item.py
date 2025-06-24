@@ -84,7 +84,7 @@ def generate_list_id(date: datetime):
 
 def validate_tipo_tarefa(tipo_tarefa):
     tipos_validos = ('Tarefa a Ser Feita', 'Item de Compra')
-    if tipos_validos.count(tipo_tarefa) == 1:
+    if tipo_tarefa in tipos_validos:
         return True
     else:
         return False
